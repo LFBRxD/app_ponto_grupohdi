@@ -14,7 +14,7 @@ class _ClockState extends State<Clock> {
   void initState() {
     _timeString =
         "${DateTime.now().hour} : ${DateTime.now().minute} :${DateTime.now().second}";
-    Timer.periodic(Duration(seconds: 1), (Timer t) => _getCurrentTime());
+    // Timer.periodic(Duration(seconds: 1), (Timer t) => _getCurrentTime());
     super.initState();
   }
 

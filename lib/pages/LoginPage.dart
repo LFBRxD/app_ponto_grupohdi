@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../components/ui/Header.dart';
+import '../services/NotificationService.dart';
 
 class LoginPage extends StatelessWidget {
   var userController = TextEditingController();
@@ -140,6 +141,9 @@ class LoginPage extends StatelessWidget {
   }
 
   Future<void> login(BuildContext context) async {
+    NotificationService()
+        .showNotification(1, 'Resultado login', 'Login Com sucesso');
+
     var headers = {
       'authorization': 'Basic ' +
           base64Encode(

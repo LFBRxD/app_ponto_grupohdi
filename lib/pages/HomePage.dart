@@ -1,3 +1,4 @@
+import 'package:app_grupohdi/services/NotificationService.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -51,24 +52,27 @@ class HomePage extends StatelessWidget {
                         color: Colors.grey[500],
                       ),
                     ),
-
                     ElevatedButton(
-                      onPressed: () => {
-                        //do something
+                      onPressed: () async {
+                        debugPrint("metodo chamado");
+                        NotificationService().showNotification(
+                            1,
+                            'Notification_title.text',
+                            'Notification_descrp.text');
                       },
                       child: new Text('Show local'),
-                    ),         ElevatedButton(
-                      onPressed: () => {
-                        //do something
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        debugPrint("metodo chamado2");
+                        NotificationService().scheduleNotification();
                       },
                       child: new Text('CShow Scheduled'),
-                    ),         ElevatedButton(
-                      onPressed: () => {
-                        //do something
-                      },
+                    ),
+                    ElevatedButton(
+                      onPressed: () => {},
                       child: new Text('Show with payload'),
                     ),
-
                   ],
                 ),
               ),
@@ -78,8 +82,6 @@ class HomePage extends StatelessWidget {
                 color: Colors.red[500],
               ),
               const Text('41'),
-
-
             ],
           ),
         ),
