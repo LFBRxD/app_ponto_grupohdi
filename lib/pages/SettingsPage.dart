@@ -1,4 +1,3 @@
-import 'package:app_grupohdi/pages/sections/Usefull.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -32,7 +31,7 @@ class SettingsPage extends StatelessWidget {
             child: ListView(
                 padding: const EdgeInsets.only(left: 30, top: 30),
                 children: const <Widget>[
-                  Text("Em contrucao")
+                  Text("Em contrucao"),
                 ])),
       ),
     );

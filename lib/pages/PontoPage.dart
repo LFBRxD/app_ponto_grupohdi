@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:app_grupohdi/core/ClockIn.dart';
 import 'package:app_grupohdi/pages/Clock.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -20,7 +19,6 @@ class _PontoPageState extends State<PontoPage> {
     var response = await http.get(url);
     if (response.statusCode == 200) {
       Map<String, dynamic> d = json.decode(response.body);
-      print("OK");
       return d;
     } else {
       throw Exception("Erro ao carregar os dados");
