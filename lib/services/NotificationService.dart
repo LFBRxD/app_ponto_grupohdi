@@ -18,18 +18,18 @@ class NotificationService {
 
   Future<void> initNotification() async {
     // Android initialization
-    final AndroidInitializationSettings initializationSettingsAndroid =
+    const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
     // ios initialization
-    final IOSInitializationSettings initializationSettingsIOS =
+    const IOSInitializationSettings initializationSettingsIOS =
         IOSInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
       requestSoundPermission: false,
     );
 
-    final InitializationSettings initializationSettings =
+    const InitializationSettings initializationSettings =
         InitializationSettings(
             android: initializationSettingsAndroid,
             iOS: initializationSettingsIOS);

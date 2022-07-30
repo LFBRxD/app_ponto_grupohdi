@@ -13,9 +13,16 @@ dependencies:
   http: ^0.13.4
   url_launcher: ^6.1.5
   flutter_local_notifications: ^9.7.0
+  workmanager: ^0.5.0
+  settings_ui: ^2.0.2
+  #remover a dependencia de settigns
+  flutter_settings_screens: ^0.2.2+1
+
   curved_navigation_bar: ^1.0.3
   flutter_launcher_icons: ^0.9.3
   timezone: ^0.8.0
+  intl: ^0.17.0
+  slide_digital_clock: any
   flutter:
     sdk: flutter
 

@@ -1,8 +1,10 @@
 import 'package:app_grupohdi/services/NotificationService.dart';
 import 'package:flutter/material.dart';
+import 'package:workmanager/workmanager.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
+  static const fetchBackground = "fetchBackground";
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +72,14 @@ class HomePage extends StatelessWidget {
                       child: new Text('CShow Scheduled'),
                     ),
                     ElevatedButton(
-                      onPressed: () => {},
+                      onPressed: () => {
+                        // callbackDispatcher(),
+                        Workmanager().registerOneOffTask(
+                            "notificationCallBack", "notificationCallBack",
+                            constraints:
+                                Constraints(networkType: NetworkType.connected),
+                            initialDelay: Duration(seconds: 60)),
+                      },
                       child: new Text('Show with payload'),
                     ),
                   ],
