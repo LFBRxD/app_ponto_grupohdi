@@ -38,7 +38,6 @@ class NotificationService {
   }
 
   Future<void> showNotification(int id, String title, String body) async {
-    print('object');
     await flutterLocalNotificationsPlugin.show(
         id,
         title,
@@ -47,10 +46,10 @@ class NotificationService {
           // Android details
           android: AndroidNotificationDetails('main_channel', 'Main Channel',
               channelDescription: "ashwin",
-              importance: Importance.max,
-              priority: Priority.max,
-              color: Colors.blue,
-              playSound: false),
+              importance: Importance.defaultImportance,
+              priority: Priority.defaultPriority,
+              color: Colors.red,
+              playSound: true),
           // iOS details
           iOS: IOSNotificationDetails(
             sound: 'default.wav',

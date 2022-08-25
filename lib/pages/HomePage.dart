@@ -58,9 +58,7 @@ class HomePage extends StatelessWidget {
                       onPressed: () async {
                         debugPrint("metodo chamado");
                         NotificationService().showNotification(
-                            1,
-                            'Notification_title.text',
-                            'Notification_descrp.text');
+                            50, 'Notificação rápida', 'Corpo da notificação');
                       },
                       child: new Text('Show local'),
                     ),

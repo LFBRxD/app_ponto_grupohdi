@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../components/ui/Header.dart';
-import '../services/NotificationService.dart';
 
 class LoginPage extends StatelessWidget {
   var userController = TextEditingController();
@@ -141,18 +140,15 @@ class LoginPage extends StatelessWidget {
   }
 
   Future<void> login(BuildContext context) async {
-    NotificationService()
-        .showNotification(1, 'Resultado login', 'Login Com sucesso');
-
     var headers = {
-      'authorization': 'Basic ' +
-          base64Encode(
-              utf8.encode('${userController.text}:${passwordController.text}')),
       "Accept": "application/json",
       "Content-type": "application/json",
     };
 
-    Map data = {"user": userController.text, "pass": passwordController.text};
+    Map data = {
+      "email": userController.text,
+      "password": passwordController.text
+    };
     //encode Map to JSON
     var body = json.encode(data);
 
@@ -162,12 +158,15 @@ class LoginPage extends StatelessWidget {
             MaterialPageRoute(builder: (context) => PagesController()));
       } else {
         var response = await http.post(
-            Uri.parse("http://192.168.3.2:5000/api/v1/login"),
+            Uri.parse("https://ghdi-poc.servicoqa.com/api/login"),
             headers: headers,
             body: body);
+
+        print(response.body);
         if (response.statusCode == 200) {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => PagesController()));
+          print(response.body);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Usuário ou senha está inválido"),

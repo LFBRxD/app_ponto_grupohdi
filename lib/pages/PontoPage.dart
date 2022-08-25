@@ -119,7 +119,7 @@ class _PontoPageState extends State<PontoPage> {
                       onPressed: () async {
                         debugPrint("metodo chamado");
                         NotificationService().showNotification(
-                            1,
+                            0,
                             'Ponto registrado',
                             'Sua marcação foi realizada com sucesso');
                       },
