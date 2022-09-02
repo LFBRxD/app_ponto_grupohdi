@@ -46,8 +46,8 @@ class NotificationService {
           // Android details
           android: AndroidNotificationDetails('main_channel', 'Main Channel',
               channelDescription: "ashwin",
-              importance: Importance.defaultImportance,
-              priority: Priority.defaultPriority,
+              importance: Importance.max,
+              priority: Priority.high,
               color: Colors.red,
               playSound: true),
           // iOS details

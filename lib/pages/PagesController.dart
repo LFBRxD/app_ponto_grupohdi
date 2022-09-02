@@ -13,7 +13,7 @@ class PagesController extends StatefulWidget {
 
 class _PagesControllerState extends State<PagesController> {
   int _page = 0;
-  GlobalKey _bottomNavigationKey = GlobalKey();
+  final GlobalKey _bottomNavigationKey = GlobalKey();
 
   Widget bodyFunction() {
     switch (_page) {

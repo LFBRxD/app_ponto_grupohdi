@@ -3,23 +3,23 @@ import 'Batidas.dart';
 class Registroponto {
   late String id;
   late String guid;
-  late bool podeBater;
-  late List<Batidas> batidas;
+  late bool canHit;
+  late List<Batidas> hits;
 
   Registroponto(
       {required this.id,
       required this.guid,
-      required this.podeBater,
-      required this.batidas});
+      required this.canHit,
+      required this.hits});
 
   Registroponto.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     guid = json['guid'];
-    podeBater = json['podeBater'];
-    if (json['batidas'] != null) {
-      batidas = <Batidas>[];
-      json['batidas'].forEach((v) {
-        batidas.add(new Batidas.fromJson(v));
+    canHit = json['can_hit'];
+    if (json['hits'] != null) {
+      hits = <Batidas>[];
+      json['hits'].forEach((v) {
+        hits.add(Batidas.fromJson(v));
       });
     }
   }
@@ -28,9 +28,9 @@ class Registroponto {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['guid'] = this.guid;
-    data['podeBater'] = this.podeBater;
-    if (this.batidas != null) {
-      data['batidas'] = this.batidas.map((v) => v.toJson()).toList();
+    data['can_hit'] = this.canHit;
+    if (this.hits != null) {
+      data['hits'] = this.hits.map((v) => v.toJson()).toList();
     }
     return data;
   }

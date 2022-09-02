@@ -23,7 +23,6 @@ class HomePage extends StatelessWidget {
         automaticallyImplyLeading: false,
       ),
       body: Container(
-        child: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
           height: 800,
@@ -31,68 +30,50 @@ class HomePage extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(30), topRight: Radius.circular(30))),
-          child: Row(
+          child: Column(
             children: [
-              Expanded(
-                /*1*/
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    /*2*/
-                    Container(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: const Text(
-                        'Oeschinen Lake ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      'Kandersteg, ',
-                      style: TextStyle(
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        debugPrint("metodo chamado");
-                        NotificationService().showNotification(
-                            50, 'Notificação rápida', 'Corpo da notificação');
-                      },
-                      child: new Text('Show local'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        debugPrint("metodo chamado2");
-                        NotificationService().scheduleNotification();
-                      },
-                      child: new Text('CShow Scheduled'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => {
-                        // callbackDispatcher(),
-                        Workmanager().registerOneOffTask(
-                            "notificationCallBack", "notificationCallBack",
-                            constraints:
-                                Constraints(networkType: NetworkType.connected),
-                            initialDelay: Duration(seconds: 60)),
-                      },
-                      child: new Text('Show with payload'),
-                    ),
-                  ],
+              /*2*/
+              Container(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: const Text(
+                  'Oeschinen Lake ',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              /*3*/
-              Icon(
-                Icons.star,
-                color: Colors.red[500],
+              Text(
+                'Kandersteg, ',
+                style: TextStyle(
+                  color: Colors.grey[500],
+                ),
               ),
-              const Text('41'),
+              ElevatedButton(
+                onPressed: () async {
+                  NotificationService().showNotification(
+                      50, 'Notificação rápida', 'Corpo da notificação');
+                },
+                child: new Text('Show local'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  NotificationService().scheduleNotification();
+                },
+                child: new Text('CShow Scheduled'),
+              ),
+              ElevatedButton(
+                onPressed: () => {
+                  // callbackDispatcher(),
+                  Workmanager().registerOneOffTask(
+                      "notificationCallBack", "notificationCallBack",
+                      constraints:
+                          Constraints(networkType: NetworkType.connected),
+                      initialDelay: Duration(seconds: 60)),
+                },
+                child: new Text('Show with payload'),
+              ),
             ],
-          ),
-        ),
-      ),
+          )),
     );
   }
 }

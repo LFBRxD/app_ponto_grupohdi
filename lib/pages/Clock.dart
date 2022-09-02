@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 class Clock extends StatefulWidget {
@@ -22,7 +20,7 @@ class _ClockState extends State<Clock> {
   Widget build(BuildContext context) {
     return Text(
       _timeString,
-      style: TextStyle(fontSize: 30),
+      style: const TextStyle(fontSize: 30),
     );
   }
 

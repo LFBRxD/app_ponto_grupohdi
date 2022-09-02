@@ -1,57 +1,73 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:slide_digital_clock/slide_digital_clock.dart';
 
-import '../entitys/Registroponto.dart';
+import '../core/API.dart';
+import '../entitys/Batidas.dart';
 import '../services/NotificationService.dart';
 
 class PontoPage extends StatefulWidget {
   const PontoPage({Key? key}) : super(key: key);
-
   @override
   _PontoPageState createState() => _PontoPageState();
 }
 
 class _PontoPageState extends State<PontoPage> {
-  late Future<Map<String, dynamic>> data = pegarPontos();
-  static String hora = "";
+  bool canHit = true;
+  Future<Batidas> batidasFuture = getPointHits();
 
-  static const List<String> tituloBatida = [
-    "Entrada",
-    "Almoço",
-    "Retorno",
-    "Saida"
-  ];
-
-  static List<Registroponto> getChecks() {
-    const data = [
-      {
-        "id": "62e441dda286112413683f1c",
-        "guid": "1adb789a-4eba-4a9d-a1cf-85dd8f0549e2",
-        "podeBater": true,
-        "batidas": [
-          {"id": 0, "dataRegistro": "2022-07-29T05:23:57 +03:00"},
-          {"id": 1, "dataRegistro": "2022-07-29T05:23:57 +03:00"},
-          {"id": 2, "dataRegistro": "2022-07-29T05:23:57 +03:00"}
-        ]
-      }
-    ];
-    return data.map<Registroponto>(Registroponto.fromJson).toList();
+  static Future<Batidas> getPointHits() async {
+    // return API.getChecksFromCurUser("tokenJWT");
+    var url = Uri.parse('http://192.168.3.20:8000/api/pointhits');
+    final response = await http.get(url);
+    Map<String, dynamic> body = json.decode(response.body);
+    return Batidas.fromJson(body);
   }
 
-  Future<Map<String, dynamic>> pegarPontos() async {
-    var url = Uri.parse("https://ghdi.servicoqa.com/");
-    var response = await http.get(url);
-    if (response.statusCode == 200) {
-      Map<String, dynamic> d = json.decode(response.body);
-      return d;
+  Widget buildButtonPointHit(bool canHit) {
+    if (canHit) {
+      return ElevatedButton(
+        onPressed: () async {
+          debugPrint("metodo chamado");
+          var a = await batidasFuture;
+          API
+              .saveBatidaDePonto("tokenJWT")
+              .whenComplete(() => {
+                    NotificationService()
+                        .showNotification(0, 'Ponto registrado', ""),
+                  })
+              .then((value) => {
+                    setState(() {
+                      debugPrint("o click do botão");
+                    })
+                  });
+        },
+        child: const Text('Registrar Batida'),
+      );
     } else {
-      throw Exception("Erro ao carregar os dados");
+      return ElevatedButton(
+        onPressed: null,
+        child: const Text('Tenha um bom descanço'),
+      );
     }
   }
+
+  Widget buildPointHits(Batidas batidas) => ListView.builder(
+      itemCount: batidas.hit?.length,
+      itemBuilder: (context, index) {
+        final bat = batidas.hit![index];
+        return Card(
+          child: ListTile(
+            leading: const CircleAvatar(
+                // backgroundImage: AssetImage(tituloBatida[1]),
+                ),
+            title: Text("${index}"),
+            subtitle: Text(bat.createdAt.toString()),
+          ),
+        );
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +112,7 @@ class _PontoPageState extends State<PontoPage> {
                             digitAnimationStyle: Curves.elasticInOut,
                             is24HourTimeFormat: true,
                             areaDecoration:
-                                BoxDecoration(color: Colors.transparent),
+                                const BoxDecoration(color: Colors.transparent),
                             hourMinuteDigitTextStyle: const TextStyle(
                               color: Colors.blueGrey,
                               fontSize: 50,
@@ -106,7 +122,22 @@ class _PontoPageState extends State<PontoPage> {
                       )),
                 ),
                 Expanded(
-                  child: criarEntradasESaidas(getChecks()),
+                  child: FutureBuilder<Batidas>(
+                    future: batidasFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasData) {
+                        var pointHits = snapshot.data!;
+                        return buildPointHits(pointHits);
+                      } else {
+                        setState(() {
+                          canHit = false;
+                        });
+                        return const Text("Não houveram batidas hoje");
+                      }
+                    },
+                  ),
                 ),
                 Align(
                   alignment: Alignment.bottomCenter,
@@ -115,42 +146,12 @@ class _PontoPageState extends State<PontoPage> {
                     height: 75.0,
                     width: double.infinity,
                     // color: Colors.blue,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        debugPrint("metodo chamado");
-                        NotificationService().showNotification(
-                            0,
-                            'Ponto registrado',
-                            'Sua marcação foi realizada com sucesso');
-                      },
-                      child: const Text('Registrar Batida'),
-                    ),
+                    child: buildButtonPointHit(canHit),
                   ),
                 ),
               ],
             )),
       ),
-    );
-  }
-
-  ListView criarEntradasESaidas(List<Registroponto> batidas) {
-    return ListView.builder(
-      itemBuilder: (BuildContext, index) {
-        var b = batidas.single.batidas[index];
-        return Card(
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundImage: AssetImage(tituloBatida[index]),
-            ),
-            title: Text(tituloBatida[index]),
-            subtitle: Text(b.dataRegistro),
-          ),
-        );
-      },
-      itemCount: batidas.single.batidas.length,
-      shrinkWrap: true,
-      padding: EdgeInsets.all(5),
-      scrollDirection: Axis.vertical,
     );
   }
 }
