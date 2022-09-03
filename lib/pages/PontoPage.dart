@@ -73,18 +73,6 @@ class _PontoPageState extends State<PontoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.cyan.shade500,
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.cyan.shade500,
-        title: const Text(
-          "Ponto",
-          style: TextStyle(
-            fontSize: 25,
-          ),
-        ),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      ),
       body: Container(
         alignment: Alignment.topCenter,
         child: Container(

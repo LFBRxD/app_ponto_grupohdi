@@ -14,7 +14,9 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = MediaQuery.of(context).platformBrightness == Brightness.dark ? 'DarkTheme': 'LightTheme';
+    final text = MediaQuery.of(context).platformBrightness == Brightness.dark
+        ? 'DarkTheme'
+        : 'LightTheme';
     return Scaffold(
       body: getBody(context),
     );
@@ -156,7 +158,7 @@ class LoginPage extends StatelessWidget {
     if (userController.text.isNotEmpty && passwordController.text.isNotEmpty) {
       if (userController.text == "hdi" && passwordController.text == "hdi") {
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => PagesController()));
+            MaterialPageRoute(builder: (context) => const PagesController(0)));
       } else {
         var response = await http.post(
             Uri.parse("https://ghdi-poc.servicoqa.com/api/login"),
@@ -166,7 +168,7 @@ class LoginPage extends StatelessWidget {
         print(response.body);
         if (response.statusCode == 200) {
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => PagesController()));
+              MaterialPageRoute(builder: (context) => PagesController(0)));
           print(response.body);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

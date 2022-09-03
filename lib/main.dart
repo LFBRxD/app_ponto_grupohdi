@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:app_grupohdi/core/ThemeManager.dart';
 import 'package:app_grupohdi/core/ThemeProvider.dart';
-import 'package:app_grupohdi/pages/LoginPage.dart';
+import 'package:app_grupohdi/pages/PagesController.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workmanager/workmanager.dart';
@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
             theme: ThemeManager.whiteTheme,
             darkTheme: ThemeManager.darkTheme,
             debugShowCheckedModeBanner: false,
-            home: LoginPage(),
+            home: const PagesController(0),
           );
         },
       );

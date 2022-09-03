@@ -2,8 +2,6 @@ import 'package:app_grupohdi/services/NotificationService.dart';
 import 'package:flutter/material.dart';
 import 'package:workmanager/workmanager.dart';
 
-import '../components/ChangeThemeButtonWidget.dart';
-
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
   static const fetchBackground = "fetchBackground";
@@ -11,20 +9,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.cyan.shade500,
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.cyan.shade500,
-        title: const Text(
-          "Home",
-          style: TextStyle(
-            fontSize: 25,
-          ),
-        ),
-        actions: [ChangeThemeButtonWidget()],
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      ),
+      backgroundColor: Theme.of(context).primaryColor,
       body: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
