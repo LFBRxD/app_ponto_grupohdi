@@ -14,6 +14,7 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final text = MediaQuery.of(context).platformBrightness == Brightness.dark ? 'DarkTheme': 'LightTheme';
     return Scaffold(
       body: getBody(context),
     );

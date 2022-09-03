@@ -47,9 +47,9 @@ class _PontoPageState extends State<PontoPage> {
         child: const Text('Registrar Batida'),
       );
     } else {
-      return ElevatedButton(
+      return const ElevatedButton(
         onPressed: null,
-        child: const Text('Tenha um bom descanço'),
+        child: Text('Tenha um bom descanço'),
       );
     }
   }
@@ -131,9 +131,6 @@ class _PontoPageState extends State<PontoPage> {
                         var pointHits = snapshot.data!;
                         return buildPointHits(pointHits);
                       } else {
-                        setState(() {
-                          canHit = false;
-                        });
                         return const Text("Não houveram batidas hoje");
                       }
                     },

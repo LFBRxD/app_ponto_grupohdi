@@ -2,6 +2,8 @@ import 'package:app_grupohdi/services/NotificationService.dart';
 import 'package:flutter/material.dart';
 import 'package:workmanager/workmanager.dart';
 
+import '../components/ChangeThemeButtonWidget.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
   static const fetchBackground = "fetchBackground";
@@ -19,6 +21,7 @@ class HomePage extends StatelessWidget {
             fontSize: 25,
           ),
         ),
+        actions: [ChangeThemeButtonWidget()],
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
