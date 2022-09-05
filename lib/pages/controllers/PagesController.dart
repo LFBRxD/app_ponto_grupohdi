@@ -1,4 +1,3 @@
-import 'package:app_grupohdi/components/ChangeThemeButtonWidget.dart';
 import 'package:app_grupohdi/pages/HomePage.dart';
 import 'package:app_grupohdi/pages/LoginPage.dart';
 import 'package:app_grupohdi/pages/PontoPage.dart';
@@ -52,35 +51,36 @@ class _PagesControllerState extends State<PagesController> {
               fontSize: 25,
             ),
           ),
-          actions: const [ChangeThemeButtonWidget()],
+          actions: [
+            Container(),
+            // ChangeThemeButtonWidget()
+          ],
           centerTitle: true,
         ),
-        body: bodyFunction(),
+        body: SafeArea(
+          child: bodyFunction(),
+        ),
         bottomNavigationBar: CurvedNavigationBar(
           key: _bottomNavigationKey,
           index: 0,
           height: 50.0,
           items: <Widget>[
-            const Icon(Icons.home, size: 30),
-            const Icon(Icons.access_time_outlined, size: 30),
-            // Icon(Icons.more_horiz, size: 30),
+            const Icon(Icons.home, size: 40),
+            const Icon(Icons.access_time_outlined, size: 40),
             buildDrawerButtonMenu(
                 icon: Icons.more_horiz,
                 size: 30,
+                color: Theme.of(context).primaryColor,
                 onClicked: () {
-                  // Scaffold.of(sideMenuKey).openEndDrawer();
                   sideMenuKey.currentState!.openEndDrawer();
                 }),
           ],
           color: Colors.cyan.shade200,
-          buttonBackgroundColor: Colors.grey.shade200,
+          buttonBackgroundColor: Theme.of(context).primaryColor,
           backgroundColor: Colors.white,
           animationCurve: Curves.easeInOut,
           animationDuration: const Duration(milliseconds: 200),
           onTap: (index) {
-            // if (index == 2) {
-            //   _scaffoldKey.currentState?.openDrawer();
-            // }
             setState(() {
               _page = index;
             });
@@ -93,18 +93,16 @@ class _PagesControllerState extends State<PagesController> {
   Widget buildDrawerButtonMenu({
     required IconData icon,
     required double size,
+    required Color color,
     VoidCallback? onClicked,
   }) {
-    const color = Colors.white;
-    const hoverColor = Colors.white70;
-
-    return ListTile(
-      leading: Icon(
+    return IconButton(
+      icon: Icon(
         icon,
         color: color,
         size: size,
       ),
-      onTap: onClicked,
+      onPressed: onClicked,
     );
   }
 }

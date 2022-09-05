@@ -1,44 +1,69 @@
 import 'dart:convert';
 
-import 'package:app_grupohdi/pages/PagesController.dart';
+import 'package:app_grupohdi/core/UserPreferencesManager.dart';
+import 'package:app_grupohdi/pages/controllers/PagesController.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../components/ui/Header.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  LoginPage({Key? key}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   var userController = TextEditingController();
   var passwordController = TextEditingController();
+  var saveLoginData = false;
 
-  LoginPage({Key? key}) : super(key: key);
+  final textFieldFocusNode = FocusNode();
+  bool _obscured = true;
+
+  @override
+  void initState() {
+    super.initState();
+    UserPreferencesManager.hasUserAndPasswordsaved().then((value) {
+      if (value) {
+        userController.text = UserPreferencesManager.getUserLogin()!;
+      }
+      setState(() {
+        saveLoginData = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final text = MediaQuery.of(context).platformBrightness == Brightness.dark
         ? 'DarkTheme'
         : 'LightTheme';
+
     return Scaffold(
-      body: getBody(context),
+      body: SafeArea(
+        child: getBody(context),
+      ),
     );
   }
 
   Container getBody(BuildContext context) {
     return Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-            image: const DecorationImage(
-              image: AssetImage('assets/logo.png'),
-              fit: BoxFit.fitWidth,
-              alignment: Alignment.topCenter,
-            ),
-            gradient: LinearGradient(begin: Alignment.topCenter, colors: [
-              Colors.cyan.shade500,
-              Colors.cyan.shade300,
-              Colors.cyan.shade400
-            ])),
-        child: SafeArea(
-          child: getColum(context),
-        ));
+      width: double.infinity,
+      decoration: BoxDecoration(
+          image: const DecorationImage(
+            image: AssetImage('assets/logo.png'),
+            fit: BoxFit.fitWidth,
+            alignment: Alignment.topCenter,
+          ),
+          gradient: LinearGradient(begin: Alignment.topCenter, colors: [
+            Colors.cyan.shade500,
+            Colors.cyan.shade300,
+            Colors.cyan.shade400
+          ])),
+      child: getColum(context),
+    );
   }
 
   Column getColum(BuildContext context) {
@@ -72,20 +97,38 @@ class LoginPage extends StatelessWidget {
                     child: Column(
                       children: <Widget>[
                         TextInput("Informe seu usuário", false, userController),
-                        TextInput(
-                            "Informe sua senha", true, passwordController),
+                        TextInputPass("Informe sua senha", passwordController),
                       ],
                     ),
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 10,
                   ),
-                  const Text(
-                    "Recuperar senha ?",
-                    style: TextStyle(color: Colors.grey),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Salvar dados do login",
+                        style: TextStyle(
+                          color: Colors.black,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Switch.adaptive(
+                        value: saveLoginData,
+                        onChanged: (isOn) {
+                          setState(() {
+                            saveLoginData = isOn;
+                            if(!saveLoginData){
+                              UserPreferencesManager.clearUserDataFromSavedLogin();
+                            }
+                          });
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(
-                    height: 40,
+                    height: 15,
                   ),
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -101,7 +144,8 @@ class LoginPage extends StatelessWidget {
                               vertical: 15) //content padding inside button
                           ),
                       onPressed: () {
-                        login(context);
+                        login(context, userController.text,
+                            passwordController.text);
                       },
                       child: const Text(
                         "Logar",
@@ -111,6 +155,13 @@ class LoginPage extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       )),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  const Text(
+                    "Recuperar senha ?",
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ],
               ),
             ),
@@ -137,26 +188,79 @@ class LoginPage extends StatelessWidget {
             color: Colors.grey,
           ),
           border: InputBorder.none,
+          prefixIcon: Icon(Icons.account_circle, size: 24),
         ),
       ),
     );
   }
 
-  Future<void> login(BuildContext context) async {
+  void login2() {
+    // if (UserPreferencesManager.hasUserAndPasswordsaved()) {
+    //   login(context, UserPreferencesManager.getUserLogin().toString(),
+    //       UserPreferencesManager.getUserPass().toString());
+    //   Navigator.push(
+    //       context, MaterialPageRoute(builder: (context) => PagesController(0)));
+    // }
+  }
+
+  Container TextInputPass(String info, TextEditingController controller) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: Colors.grey.shade200))),
+      child: TextField(
+        controller: controller,
+        obscureText: _obscured,
+        focusNode: textFieldFocusNode,
+        enableSuggestions: false,
+        autocorrect: false,
+        decoration: InputDecoration(
+          hintText: info,
+          hintStyle: const TextStyle(
+            color: Colors.grey,
+          ),
+          border: InputBorder.none,
+          prefixIcon: Icon(Icons.lock_rounded, size: 24),
+          suffixIcon: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+            child: GestureDetector(
+              onTap: _toggleObscured,
+              child: Icon(
+                _obscured
+                    ? Icons.visibility_rounded
+                    : Icons.visibility_off_rounded,
+                size: 24,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _toggleObscured() {
+    setState(() {
+      _obscured = !_obscured;
+      if (textFieldFocusNode.hasPrimaryFocus) {
+        return;
+      } // If focus is on text field, dont unfocus
+      textFieldFocusNode.canRequestFocus =
+          false; // Prevents focus if tap on eye
+    });
+  }
+
+  Future<void> login(BuildContext context, String login, String pass) async {
     var headers = {
       "Accept": "application/json",
       "Content-type": "application/json",
     };
 
-    Map data = {
-      "email": userController.text,
-      "password": passwordController.text
-    };
+    Map data = {"email": login, "password": pass};
     //encode Map to JSON
     var body = json.encode(data);
 
-    if (userController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-      if (userController.text == "hdi" && passwordController.text == "hdi") {
+    if (login.isNotEmpty && pass.isNotEmpty) {
+      if (login == "hdi" && pass == "hdi") {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const PagesController(0)));
       } else {
@@ -164,9 +268,10 @@ class LoginPage extends StatelessWidget {
             Uri.parse("https://ghdi-poc.servicoqa.com/api/login"),
             headers: headers,
             body: body);
-
-        print(response.body);
         if (response.statusCode == 200) {
+          if (saveLoginData) {
+            UserPreferencesManager.setUserAndPassword(login, pass);
+          }
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => PagesController(0)));
           print(response.body);
@@ -182,10 +287,5 @@ class LoginPage extends StatelessWidget {
       ));
     }
     passwordController.text = "";
-  }
-
-  void _navigateToNextScreen(BuildContext context) {
-    //navega entre paginas
-    // Navigator.of(context).push(MaterialPageRoute(builder: (context) => const PontoPage()));
   }
 }

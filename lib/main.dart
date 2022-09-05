@@ -2,18 +2,19 @@ import 'dart:async';
 
 import 'package:app_grupohdi/core/ThemeManager.dart';
 import 'package:app_grupohdi/core/ThemeProvider.dart';
-import 'package:app_grupohdi/pages/PagesController.dart';
+import 'package:app_grupohdi/pages/controllers/PagesController.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workmanager/workmanager.dart';
 
+import 'core/UserPreferencesManager.dart';
 import 'services/NotificationService.dart';
 
-void main() {
+Future<void> main() async {
   // to ensure all the widgets are initialized.
   WidgetsFlutterBinding.ensureInitialized();
-
   Workmanager().initialize(callbackDispatcher);
+  await UserPreferencesManager.init();
 
   // to initialize the notificationservice.
   NotificationService().initNotification();
@@ -47,7 +48,7 @@ class MyApp extends StatelessWidget {
             theme: ThemeManager.whiteTheme,
             darkTheme: ThemeManager.darkTheme,
             debugShowCheckedModeBanner: false,
-            home: const PagesController(0),
+            home: const PagesController(-1),
           );
         },
       );

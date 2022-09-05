@@ -28,9 +28,11 @@ class _PontoPageState extends State<PontoPage> {
 
   Widget buildButtonPointHit(bool canHit) {
     if (canHit) {
-      return ElevatedButton(
+      return IconButton(
+        icon: const Icon(Icons.fingerprint),
+        iconSize: 120,
         onPressed: () async {
-          debugPrint("metodo chamado");
+          print('object');
           var a = await batidasFuture;
           API
               .saveBatidaDePonto("tokenJWT")
@@ -44,7 +46,6 @@ class _PontoPageState extends State<PontoPage> {
                     })
                   });
         },
-        child: const Text('Registrar Batida'),
       );
     } else {
       return const ElevatedButton(
@@ -85,7 +86,7 @@ class _PontoPageState extends State<PontoPage> {
                     topRight: Radius.circular(30))),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Align(
                   alignment: Alignment.topCenter,
@@ -128,7 +129,7 @@ class _PontoPageState extends State<PontoPage> {
                   alignment: Alignment.bottomCenter,
                   child: Container(
                     alignment: Alignment.center,
-                    height: 75.0,
+                    height: 150.0,
                     width: double.infinity,
                     // color: Colors.blue,
                     child: buildButtonPointHit(canHit),

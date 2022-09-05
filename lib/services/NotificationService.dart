@@ -4,6 +4,10 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
+  static String _MAIN_CHANNEL = 'Main Channel';
+  static String _COMUNICATION_CHANNEL = 'Comunication Channel';
+  static String _POINTHIT_CHANNEL = 'PointHit Channel';
+
   static final NotificationService _notificationService =
       NotificationService._internal();
 
@@ -44,12 +48,15 @@ class NotificationService {
         body,
         const NotificationDetails(
           // Android details
-          android: AndroidNotificationDetails('main_channel', 'Main Channel',
-              channelDescription: "ashwin",
-              importance: Importance.max,
-              priority: Priority.high,
-              color: Colors.red,
-              playSound: true),
+          android: AndroidNotificationDetails(
+            'main_channel_1', 'Main Channel',
+            channelDescription: "ashwin",
+            importance: Importance.max,
+            priority: Priority.high,
+            color: Colors.red,
+            sound: RawResourceAndroidNotificationSound('audio1'),
+            // playSound: true
+          ),
           // iOS details
           iOS: IOSNotificationDetails(
             sound: 'default.wav',
@@ -62,9 +69,9 @@ class NotificationService {
 
   Future<void> scheduleNotification() async {
     tz.initializeTimeZones();
-    tz.setLocalLocation(tz.getLocation('Europe/Warsaw'));
+    tz.setLocalLocation(tz.getLocation('America/Sao_Paulo'));
 
-    var currentDateTime = tz.TZDateTime.now(tz.getLocation('Europe/Warsaw'))
+    var currentDateTime = tz.TZDateTime.now(tz.getLocation('America/Sao_Paulo'))
         .add(const Duration(seconds: 10));
     await flutterLocalNotificationsPlugin.zonedSchedule(
       5,
@@ -73,11 +80,13 @@ class NotificationService {
       currentDateTime, //schedule the notification to show after 2 seconds.
       const NotificationDetails(
         // Android details
-        android: AndroidNotificationDetails('main_channel', 'Main Channel',
+        android: AndroidNotificationDetails(
+            'main_channel_delayed', 'Main Channel',
             channelDescription: "ashwin",
             importance: Importance.high,
             priority: Priority.max,
             color: Colors.blue,
+            sound: RawResourceAndroidNotificationSound('audio1'),
             playSound: true),
         // iOS details
         iOS: IOSNotificationDetails(
