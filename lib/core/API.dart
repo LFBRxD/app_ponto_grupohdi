@@ -68,33 +68,33 @@ class API {
     if (response.statusCode == 200) {
       return response.body;
     }
+  }
 
-    Future<String> loginNoContext(String token) async {
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-      decodedToken.forEach((k, v) => print("got key $k with $v"));
-      final email = UserPreferencesManager.getUserLogin();
-      var headers = {
-        "Accept": "application/json",
-        "Content-type": "application/json",
-      };
-      Map data = {
-        "email": email!,
-        "password": UserPreferencesManager.getUserPass()!
-      };
-      //encode Map to JSON
-      var body = json.encode(data);
+  static Future<String> loginNoContext(String token) async {
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+    decodedToken.forEach((k, v) => print("got key $k with $v"));
+    final email = UserPreferencesManager.getUserLogin();
+    var headers = {
+      "Accept": "application/json",
+      "Content-type": "application/json",
+    };
+    Map data = {
+      "email": email!,
+      "password": UserPreferencesManager.getUserPass()!
+    };
+    //encode Map to JSON
+    var body = json.encode(data);
 
-      var response = await http.post(
-          Uri.parse("${GhdiAppConstants.API_URL}/api/login"),
-          headers: headers,
-          body: body);
-      if (response.statusCode == 200) {
-        print(response.body);
-        return json.decode(response.body)['access_token'];
-      } else {
-        UserPreferencesManager.clearUserDataFromSavedLogin();
-        return email;
-      }
+    var response = await http.post(
+        Uri.parse("${GhdiAppConstants.API_URL}/api/login"),
+        headers: headers,
+        body: body);
+    if (response.statusCode == 200) {
+      print(response.body);
+      return json.decode(response.body)['access_token'];
+    } else {
+      UserPreferencesManager.clearUserDataFromSavedLogin();
+      return email;
     }
   }
 }
