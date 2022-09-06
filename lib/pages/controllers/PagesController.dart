@@ -4,11 +4,18 @@ import 'package:app_grupohdi/pages/PontoPage.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/UserPreferencesManager.dart';
 import 'NavigationDraweWidget.dart';
 
 class PagesController extends StatefulWidget {
   final int pageID;
-  const PagesController(this.pageID);
+  final String token;
+
+  const PagesController({
+    required this.token,
+    Key? key,
+    required this.pageID,
+  }) : super(key: key);
 
   @override
   _PagesControllerState createState() => _PagesControllerState();
@@ -21,26 +28,36 @@ class _PagesControllerState extends State<PagesController> {
   final GlobalKey _bottomNavigationKey = GlobalKey();
   final sideMenuKey = GlobalKey<ScaffoldState>();
 
+  @override
+  void initState() {
+    super.initState();
+    print('token na tela Controller : ${widget.token}');
+    if (widget.token.isEmpty) {
+      UserPreferencesManager.clearUserDataFromSavedLogin();
+      // Navigator.push(
+      //     context, MaterialPageRoute(builder: (context) => const LoginPage()));
+    }
+  }
+
   Widget bodyFunction() {
     switch (_page) {
       case 0:
-        return const HomePage();
+        return HomePage(token: widget.token);
       case 1:
-        return const PontoPage();
+        return PontoPage(token: widget.token);
       default:
-        return LoginPage();
+        return const LoginPage();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Logado: $alreadyLogged e ${widget.pageID.toInt()} ");
     if (!alreadyLogged && widget.pageID < 0) {
-      return LoginPage();
+      return const LoginPage();
     } else {
       return Scaffold(
         key: sideMenuKey,
-        endDrawer: NavigationDrawerWidget(),
+        endDrawer: NavigationDrawerWidget(token: widget.token),
         appBar: AppBar(
           elevation: 0.0,
           automaticallyImplyLeading: false,

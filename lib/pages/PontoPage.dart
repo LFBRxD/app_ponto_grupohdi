@@ -1,7 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart'; // for date format
 import 'package:slide_digital_clock/slide_digital_clock.dart';
 
 import '../core/API.dart';
@@ -9,22 +7,55 @@ import '../entitys/Batidas.dart';
 import '../services/NotificationService.dart';
 
 class PontoPage extends StatefulWidget {
-  const PontoPage({Key? key}) : super(key: key);
+  final String token;
+
+  const PontoPage({Key? key, required this.token}) : super(key: key);
+
   @override
   _PontoPageState createState() => _PontoPageState();
 }
 
 class _PontoPageState extends State<PontoPage> {
   bool canHit = true;
-  Future<Batidas> batidasFuture = getPointHits();
 
-  static Future<Batidas> getPointHits() async {
-    // return API.getChecksFromCurUser("tokenJWT");
-    var url = Uri.parse('http://192.168.3.20:8000/api/pointhits');
-    final response = await http.get(url);
-    Map<String, dynamic> body = json.decode(response.body);
-    return Batidas.fromJson(body);
+  @override
+  void initState() {
+    super.initState();
+    print('token na tela de ponto : ${widget.token}');
   }
+
+  late Future<Batidas> batidasFuture = API.getPointHits(widget.token);
+
+  List<String> tiposBatida = [
+    'Inicio de expediente',
+    'Almoço',
+    'Retorno Almoço',
+    'Fim de expediente',
+    'Batida extra'
+  ];
+
+  getCustomFormattedDateTime(String givenDateTime, String dateFormat) {
+    // dateFormat = 'MM/dd/yy';
+    final DateTime docDateTime = DateTime.parse(givenDateTime);
+    return DateFormat(dateFormat).format(docDateTime);
+  }
+
+  Widget buildPointHits(Batidas batidas) => ListView.builder(
+      itemCount: batidas.hit?.length,
+      itemBuilder: (context, index) {
+        final bat = batidas.hit![index];
+        print(getCustomFormattedDateTime(bat.createdAt.toString(), 'MM/dd/yy'));
+        return Card(
+          child: ListTile(
+            // leading: const CircleAvatar(
+            //     // backgroundImage: AssetImage(tituloBatida[1]),
+            //     ),
+            title: Text(tiposBatida[index >= 5 ? 4 : index]),
+            subtitle: Text(
+                getCustomFormattedDateTime(bat.createdAt.toString(), 'HH:mm')),
+          ),
+        );
+      });
 
   Widget buildButtonPointHit(bool canHit) {
     if (canHit) {
@@ -32,13 +63,12 @@ class _PontoPageState extends State<PontoPage> {
         icon: const Icon(Icons.fingerprint),
         iconSize: 120,
         onPressed: () async {
-          print('object');
           var a = await batidasFuture;
           API
-              .saveBatidaDePonto("tokenJWT")
+              .saveBatidaDePonto(widget.token)
               .whenComplete(() => {
-                    NotificationService()
-                        .showNotification(0, 'Ponto registrado', ""),
+                    NotificationService().showNotificationPointRegistered(
+                        0, 'Ponto registrado!', ""),
                   })
               .then((value) => {
                     setState(() {
@@ -54,21 +84,6 @@ class _PontoPageState extends State<PontoPage> {
       );
     }
   }
-
-  Widget buildPointHits(Batidas batidas) => ListView.builder(
-      itemCount: batidas.hit?.length,
-      itemBuilder: (context, index) {
-        final bat = batidas.hit![index];
-        return Card(
-          child: ListTile(
-            leading: const CircleAvatar(
-                // backgroundImage: AssetImage(tituloBatida[1]),
-                ),
-            title: Text("${index}"),
-            subtitle: Text(bat.createdAt.toString()),
-          ),
-        );
-      });
 
   @override
   Widget build(BuildContext context) {

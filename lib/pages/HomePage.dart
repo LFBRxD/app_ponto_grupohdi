@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:workmanager/workmanager.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final String token;
+  const HomePage({Key? key, required this.token}) : super(key: key);
   static const fetchBackground = "fetchBackground";
 
   @override

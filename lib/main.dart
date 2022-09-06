@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
             theme: ThemeManager.whiteTheme,
             darkTheme: ThemeManager.darkTheme,
             debugShowCheckedModeBanner: false,
-            home: const PagesController(-1),
+            home: const PagesController(token: 'ignore', pageID: -1),
           );
         },
       );

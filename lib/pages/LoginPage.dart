@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app_grupohdi/core/GhdiAppConstants.dart';
 import 'package:app_grupohdi/core/UserPreferencesManager.dart';
 import 'package:app_grupohdi/pages/controllers/PagesController.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import 'package:http/http.dart' as http;
 import '../components/ui/Header.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key? key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -18,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   var userController = TextEditingController();
   var passwordController = TextEditingController();
   var saveLoginData = false;
+  String token = '';
 
   final textFieldFocusNode = FocusNode();
   bool _obscured = true;
@@ -25,13 +27,22 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    UserPreferencesManager.hasUserAndPasswordsaved().then((value) {
-      if (value) {
-        userController.text = UserPreferencesManager.getUserLogin()!;
+    UserPreferencesManager.hasUserAndPasswordsaved().then((hasLoginSaved) {
+      if (hasLoginSaved) {
+        loginNoContext().then((value2) {
+          debugPrint(value2);
+          if (value2!.length > 200) {
+            setState(() {
+              token = value2;
+            });
+          } else {
+            userController.text = UserPreferencesManager.getUserLogin()!;
+            setState(() {
+              saveLoginData = hasLoginSaved;
+            });
+          }
+        });
       }
-      setState(() {
-        saveLoginData = value;
-      });
     });
   }
 
@@ -40,12 +51,18 @@ class _LoginPageState extends State<LoginPage> {
     final text = MediaQuery.of(context).platformBrightness == Brightness.dark
         ? 'DarkTheme'
         : 'LightTheme';
-
-    return Scaffold(
-      body: SafeArea(
-        child: getBody(context),
-      ),
-    );
+    if (token.isNotEmpty) {
+      return PagesController(
+        pageID: 0,
+        token: token,
+      );
+    } else {
+      return Scaffold(
+        body: SafeArea(
+          child: getBody(context),
+        ),
+      );
+    }
   }
 
   Container getBody(BuildContext context) {
@@ -97,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                       children: <Widget>[
                         TextInput("Informe seu usuário", false, userController),
-                        TextInputPass("Informe sua senha", passwordController),
+                        textInputPass("Informe sua senha", passwordController),
                       ],
                     ),
                   ),
@@ -119,8 +136,9 @@ class _LoginPageState extends State<LoginPage> {
                         onChanged: (isOn) {
                           setState(() {
                             saveLoginData = isOn;
-                            if(!saveLoginData){
-                              UserPreferencesManager.clearUserDataFromSavedLogin();
+                            if (!saveLoginData) {
+                              UserPreferencesManager
+                                  .clearUserDataFromSavedLogin();
                             }
                           });
                         },
@@ -188,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
             color: Colors.grey,
           ),
           border: InputBorder.none,
-          prefixIcon: Icon(Icons.account_circle, size: 24),
+          prefixIcon: const Icon(Icons.account_circle, size: 24),
         ),
       ),
     );
@@ -203,7 +221,7 @@ class _LoginPageState extends State<LoginPage> {
     // }
   }
 
-  Container TextInputPass(String info, TextEditingController controller) {
+  Container textInputPass(String info, TextEditingController controller) {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -249,6 +267,37 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  Future<String?> loginNoContext() async {
+    // String yourToken = "Your JWT";
+    // Map<String, dynamic> decodedToken = JwtDecoder.decode(
+    //     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4zLjIwOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNjYyNDE2MDE0LCJleHAiOjE2NjI0MTk2MTQsIm5iZiI6MTY2MjQxNjAxNCwianRpIjoic2Iza01mRVdtQk5zclZEMCIsInN1YiI6IjciLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.JscIXXO1I6_w0cCIpn16WkeQK37zQwYrTlr1nfmcuoM');
+    //
+    // decodedToken.forEach((k, v) => print("got key $k with $v"));
+    final email = UserPreferencesManager.getUserLogin();
+    var headers = {
+      "Accept": "application/json",
+      "Content-type": "application/json",
+    };
+    Map data = {
+      "email": email,
+      "password": UserPreferencesManager.getUserPass()!
+    };
+    //encode Map to JSON
+    var body = json.encode(data);
+
+    var response = await http.post(
+        Uri.parse("${GhdiAppConstants.API_URL}/api/login"),
+        headers: headers,
+        body: body);
+    if (response.statusCode == 200) {
+      print(response.body);
+      return json.decode(response.body)['access_token'];
+    } else {
+      UserPreferencesManager.clearUserDataFromSavedLogin();
+      return email;
+    }
+  }
+
   Future<void> login(BuildContext context, String login, String pass) async {
     var headers = {
       "Accept": "application/json",
@@ -261,19 +310,30 @@ class _LoginPageState extends State<LoginPage> {
 
     if (login.isNotEmpty && pass.isNotEmpty) {
       if (login == "hdi" && pass == "hdi") {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const PagesController(0)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => PagesController(
+                      pageID: 0,
+                      token: token,
+                    )));
       } else {
         var response = await http.post(
-            Uri.parse("https://ghdi-poc.servicoqa.com/api/login"),
+            Uri.parse("${GhdiAppConstants.API_URL}/api/login"),
             headers: headers,
             body: body);
         if (response.statusCode == 200) {
+          token = json.decode(response.body)['access_token'];
           if (saveLoginData) {
             UserPreferencesManager.setUserAndPassword(login, pass);
           }
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => PagesController(0)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PagesController(
+                        pageID: 0,
+                        token: token,
+                      )));
           print(response.body);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

@@ -41,6 +41,33 @@ class NotificationService {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
+  Future<void> showNotificationPointRegistered(
+      int id, String title, String body) async {
+    await flutterLocalNotificationsPlugin.show(
+        id,
+        title,
+        body,
+        const NotificationDetails(
+          // Android details
+          android: AndroidNotificationDetails(
+            'channelCheck', 'Registro de ponto',
+            channelDescription: "Notificacoes para registro de ponto",
+            importance: Importance.max,
+            priority: Priority.high,
+            color: Colors.red,
+            sound: RawResourceAndroidNotificationSound('audio1'),
+            // playSound: true
+          ),
+          // iOS details
+          iOS: IOSNotificationDetails(
+            sound: 'default.wav',
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
+        ));
+  }
+
   Future<void> showNotification(int id, String title, String body) async {
     await flutterLocalNotificationsPlugin.show(
         id,

@@ -2,11 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../components/ChangeThemeButtonWidget.dart';
-import '../PeoplePage.dart';
+import '../../core/UserPreferencesManager.dart';
 import '../UserInfoPage.dart';
+import 'PagesController.dart';
 
 class NavigationDrawerWidget extends StatelessWidget {
   final padding = const EdgeInsets.symmetric(horizontal: 20);
+  final String token;
+  const NavigationDrawerWidget({Key? key, required this.token})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +43,11 @@ class NavigationDrawerWidget extends StatelessWidget {
                   const SizedBox(
                     height: 24,
                   ),
-                  buildMenuItem(
-                    text: 'Funcao 1',
-                    icon: Icons.people,
-                    onClicked: () => selectedItem(context, 0),
-                  ),
+                  // buildMenuItem(
+                  //   text: 'Funcao 1',
+                  //   icon: Icons.people,
+                  //   onClicked: () => selectedItem(context, 0),
+                  // ),
                   buildMenuItem(
                     text: 'Holerite',
                     icon: Icons.account_box_outlined,
@@ -76,11 +80,12 @@ class NavigationDrawerWidget extends StatelessWidget {
                   buildMenuItem(
                     text: 'Logoff',
                     icon: Icons.logout_rounded,
+                    onClicked: () => doLogoff(context, token),
                   ),
                   const Divider(
                     color: Colors.white70,
                   ),
-                  Text('Dark mode'),
+                  const Text('Dark mode'),
                   const ChangeThemeButtonWidget(),
                 ])),
           ],
@@ -95,7 +100,11 @@ class NavigationDrawerWidget extends StatelessWidget {
       case 0:
         {
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (builder) => PeoplePage(),
+            builder: (builder) => const UserInfoPage(
+              name: 'Flavio Ramos',
+              urlImage:
+                  'https://media-exp1.licdn.com/dms/image/C4D03AQFgykctXRIXGg/profile-displayphoto-shrink_800_800/0/1661021625428?e=2147483647&v=beta&t=1_Cda0idyaHT1djzDb311_VgGC05rIfWCcQ2yyFqasQ',
+            ),
           ));
           break;
         }
@@ -124,6 +133,17 @@ class NavigationDrawerWidget extends StatelessWidget {
     );
   }
 
+  void doLogoff(BuildContext context, String token) {
+    UserPreferencesManager.clearUserDataFromSavedLogin();
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => PagesController(
+                  pageID: -1,
+                  token: token,
+                )));
+  }
+
   buildHeader({
     required String urlImage,
     required String name,
@@ -134,7 +154,7 @@ class NavigationDrawerWidget extends StatelessWidget {
       InkWell(
         onTap: onClicked,
         child: Container(
-          padding: padding.add(EdgeInsets.symmetric(vertical: 40)),
+          padding: padding.add(const EdgeInsets.symmetric(vertical: 40)),
           child: Column(
             children: [
               Row(
@@ -151,14 +171,16 @@ class NavigationDrawerWidget extends StatelessWidget {
                     children: [
                       Text(
                         name,
-                        style: TextStyle(fontSize: 20, color: Colors.white),
+                        style:
+                            const TextStyle(fontSize: 20, color: Colors.white),
                       ),
                       const SizedBox(
                         height: 4,
                       ),
                       Text(
                         email,
-                        style: TextStyle(fontSize: 14, color: Colors.white),
+                        style:
+                            const TextStyle(fontSize: 14, color: Colors.white),
                       ),
                     ],
                   ),
